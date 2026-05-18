@@ -36,6 +36,7 @@ public class SecurityConfig {
                 // ── Public ──
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/change-password").permitAll()
+                .requestMatchers("/ws/**").permitAll()
                 // ── Swagger ──
                 .requestMatchers(
                     "/swagger-ui/**",

@@ -17,9 +17,15 @@ public class Message {
 
     @Column(name = "date_envoi")
     private LocalDateTime dateEnvoi;
+    
     @ManyToOne
-@JoinColumn(name = "utilisateur_id")
-private Utilisateur utilisateur;
+    @JoinColumn(name = "sender_id")
+    private Utilisateur sender;
+
+   @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private Utilisateur receiver;
+    
 
     public Long getId() {
         return id;
@@ -36,10 +42,16 @@ private Utilisateur utilisateur;
     public void setDateEnvoi(LocalDateTime dateEnvoi) {
         this.dateEnvoi = dateEnvoi;
     }
-    public Utilisateur getUtilisateur() {
-        return utilisateur;
+    public Utilisateur getSender() {
+        return sender;
     }
-    public void setUtilisateur(Utilisateur utilisateur) {
-        this.utilisateur = utilisateur;
+    public void setSender(Utilisateur sender) {
+        this.sender = sender;
+    }
+    public Utilisateur getReceiver() {
+        return receiver;
+    }
+    public void setReceiver(Utilisateur receiver) {
+        this.receiver = receiver;
     }
 }

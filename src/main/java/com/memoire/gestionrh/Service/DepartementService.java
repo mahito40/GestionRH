@@ -28,8 +28,7 @@ public class DepartementService {
                 .map(dep -> new DepartementResponseDTO(
                     dep.getId(),
                     dep.getNom(),
-                    dep.getDescription(),
-                    dep.getServices().size()
+                    dep.getDescription()
                 ))
                 .collect(Collectors.toList());
     }

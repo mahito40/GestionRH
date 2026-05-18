@@ -16,14 +16,14 @@ public class AuthController {
 
     // RH enregistre un utilisateur
      @PostMapping("/register")
-     @PreAuthorize("hasRole('RH')")
+     @PreAuthorize("hasRole('ROLE_RH')") // Seul le RH peut créer des comptes
      public ResponseEntity<String> register(@RequestBody RegisterDTO request) {
     return ResponseEntity.ok(authService.enregistrerUtilisateur(request));
 }
 
     // Connexion
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO request) {
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO request) {
         return ResponseEntity.ok(authService.connecter(request));
     }
 

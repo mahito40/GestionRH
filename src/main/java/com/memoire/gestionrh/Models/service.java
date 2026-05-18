@@ -1,28 +1,28 @@
 package com.memoire.gestionrh.Models;
 
 import jakarta.persistence.*;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "services")
-public class ServiceEN {
+@Table(name = "Services")
 
+public class service {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nom;
-    private String niveau;
+    private String description;
+    
+    @ManyToOne
+    @JoinColumn
+    (name = "utilisateur_id")
+    private Utilisateur utilisateur;
 
     @ManyToOne
     @JoinColumn(name = "departement_id")
-    @JsonIgnore
     private Departement departement;
 
-    @OneToMany(mappedBy = "service")
-    private List<Utilisateur> utilisateurs;
 
      public Long getId() {
         return id;
@@ -33,22 +33,28 @@ public class ServiceEN {
      public void setNom(String nom) {
         this.nom = nom;
      }
-    public String getNiveau() {
-        return niveau;
+    public String getDescription() {
+        return description;
     }
-    public void setNiveau(String niveau) {
-        this.niveau = niveau;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    public Utilisateur getUtilisateur(){
+        return utilisateur;
+    }
+    public void setUtilisateur( Utilisateur utilisateur){
+
+        this.utilisateur=utilisateur;
     }
     public Departement getDepartement() {
-        return departement ;
+        return departement;
     }
     public void setDepartement(Departement departement) {
         this.departement = departement;
     }
-    public List<Utilisateur> getUtilisateurs() {
-        return utilisateurs;
-    }
-    public void setUtilisateurs(List<Utilisateur> utilisateurs) {
-        this.utilisateurs = utilisateurs;
+    
 }
-}
+
+    
+
+

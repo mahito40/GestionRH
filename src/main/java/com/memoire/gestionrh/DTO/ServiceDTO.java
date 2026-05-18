@@ -5,5 +5,11 @@ import lombok.Data;
 @Data
 public class ServiceDTO {
     private String nom;
-    private Long departementId;
+    private String description;
+
+    public ServiceDTO(Long id, String nom, String description) {
+        this.nom = nom;
+        this.description = description;
+    }
+    
 }

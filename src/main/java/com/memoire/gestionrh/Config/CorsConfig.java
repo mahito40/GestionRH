@@ -18,7 +18,7 @@ public class CorsConfig {
                 registry.addMapping("/**")
 
                         // Angular (port par défaut)
-                        .allowedOrigins("http://localhost:4200")
+                        .allowedOrigins("http://localhost:4200", "http://192.168.1.142:4200")
 
                         // Autoriser toutes les méthodes HTTP
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")

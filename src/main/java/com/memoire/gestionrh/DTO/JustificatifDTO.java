@@ -1,25 +1,21 @@
-package com.memoire.gestionrh.Models;
+package com.memoire.gestionrh.DTO;
 
-import jakarta.persistence.*;
+public class JustificatifDTO {
 
-@Entity
-@Table(name = "justificatifs")
-public class Justificatif {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String path;
 
     private String description;
 
-    @OneToOne
-    @JoinColumn(name = "demande_id")
-    private Demande demande;
+    private Long demandeId;
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getPath() {
@@ -38,11 +34,11 @@ public class Justificatif {
         this.description = description;
     }
 
-    public Demande getDemande() {
-        return demande;
+    public Long getDemandeId() {
+        return demandeId;
     }
 
-    public void setDemande(Demande demande) {
-        this.demande = demande;
+    public void setDemandeId(Long demandeId) {
+        this.demandeId = demandeId;
     }
 }

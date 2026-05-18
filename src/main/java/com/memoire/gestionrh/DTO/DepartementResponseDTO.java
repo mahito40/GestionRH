@@ -9,5 +9,4 @@ public class DepartementResponseDTO {
     private Long id;
     private String nom;
     private String description;
-    private int nombreServices;
 }

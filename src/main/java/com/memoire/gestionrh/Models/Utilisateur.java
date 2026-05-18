@@ -2,6 +2,13 @@ package com.memoire.gestionrh.Models;
 
 import jakarta.persistence.*;
 import java.util.List;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -18,22 +25,41 @@ public class Utilisateur {
     private String email;
 
     private String poste;
-    @ManyToOne
+
+    
+    @CreationTimestamp
+    @Column(updatable = false)
+     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+   @ManyToOne
     @JoinColumn(name = "service_id")
-    private ServiceEN service;
+    private service service;
 
-     @OneToMany(mappedBy = "utilisateur")
-    private List<Message> messages;
+    @ManyToOne
+    @JoinColumn(name = "superieur_id")
+    private Utilisateur superieur;
+    
+    @OneToMany(mappedBy = "superieur")
+    private List<Utilisateur> subordinates;
 
-    @OneToMany(mappedBy = "utilisateur")
-    private List<Notification> notifications;
+    @ManyToOne
+    @JoinColumn(name = "demande_id")
+    private Demande demande;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender")
+    private List<Message> sentMessages;
 
-    @OneToMany(mappedBy = "utilisateur")
-    private List<Demande> demandes;
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver")
+    private List<Message> receivedMessages;
 
     private String motDePasse;
-
-   private boolean doitChangerMotDePasse = true; // true par défaut à la création
+    @Column(name = "isfirstlogin")
+    private boolean isfirstlogin = true; // true par défaut à la création
 
      public Long getId() {
         return id;
@@ -62,29 +88,17 @@ public class Utilisateur {
      public void setPoste(String poste) {
         this.poste = poste;
      }
-       public void setService(ServiceEN service) {
-         this.service = service;
-       }
-      public ServiceEN getService() {
+      public service getService() {
          return service;
       }
-      public List<Message> getMessages() {
-         return messages;
+      public void setService(service service) {
+         this.service = service;
       }
-      public void setMessages(List<Message> messages) {
-         this.messages = messages;
+      public Utilisateur getSuperieur() {
+         return superieur;
       }
-      public List<Notification> getNotifications() {
-         return notifications;
-      }
-      public void setNotifications(List<Notification> notifications) {
-         this.notifications = notifications;
-      }
-      public List<Demande> getDemandes() {
-         return demandes;
-      }
-      public void setDemandes(List<Demande> demandes) {
-         this.demandes = demandes;
+      public void setSuperieur(Utilisateur superieur) {
+         this.superieur = superieur;
       }
       public String getMotDePasse() {
          return motDePasse;
@@ -92,10 +106,28 @@ public class Utilisateur {
       public void setMotDePasse(String motDePasse) {
          this.motDePasse = motDePasse;
       }
-      public boolean getDoitChangerMotDePasse() {
-         return doitChangerMotDePasse;
+      public boolean getIsfirstlogin() {
+         return isfirstlogin;
       }
-      public void setDoitChangerMotDePasse(boolean doitChangerMotDePasse) {
-         this.doitChangerMotDePasse = doitChangerMotDePasse;
+      public void setIsfirstlogin(boolean isfirstlogin) {
+         this.isfirstlogin = isfirstlogin;
       }  
+      public LocalDateTime getCreatedAt() {
+         return createdAt;
+      }  
+      public LocalDateTime getUpdatedAt() {
+         return updatedAt;
+      }
+      public void setUpdatedAt(LocalDateTime updatedAt) {
+         this.updatedAt = updatedAt;
+      }
+      public void setCreatedAt(LocalDateTime createdAt) {
+         this.createdAt = createdAt;
+      }
+      public Demande getDemande() {
+         return demande;
+      }
+      public void setDemande(Demande demande) {
+         this.demande = demande;
+      }
 }

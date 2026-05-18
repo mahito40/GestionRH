@@ -5,9 +5,11 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ServiceResponseDTO {
+public class AuthResponseDTO {
+    private String token;
     private Long id;
     private String nom;
-    private String niveau;
-    private int nombreUtilisateurs;
+    private String prenom;
+    private String email;
+    private String poste;
 }

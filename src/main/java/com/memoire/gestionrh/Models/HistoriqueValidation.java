@@ -2,6 +2,9 @@ package com.memoire.gestionrh.Models;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.memoire.gestionrh.enums.StatutValidation;
 
 import jakarta.persistence.*;
@@ -9,7 +12,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "validations")
-public class Validation {
+public class HistoriqueValidation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,8 +30,16 @@ public class Validation {
      private Demande demande;
      
      @ManyToOne
-@JoinColumn(name = "validateur_id")
+     @JoinColumn(name = "validateur_id")
 private Utilisateur validateur; // MANAGER, RH ou DG
+
+@CreationTimestamp
+    @Column(updatable = false)
+     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     public Long getId() {
         return id;
     }
@@ -57,4 +68,16 @@ private Utilisateur validateur; // MANAGER, RH ou DG
     public void setValidateur(Utilisateur validateur) {
         this.validateur = validateur;
     }
+    public LocalDateTime getCreatedAt() {
+         return createdAt;
+      }  
+      public LocalDateTime getUpdatedAt() {
+         return updatedAt;
+      }
+      public void setUpdatedAt(LocalDateTime updatedAt) {
+         this.updatedAt = updatedAt;
+      }
+      public void setCreatedAt(LocalDateTime createdAt) {
+         this.createdAt = createdAt;
+      }
 }

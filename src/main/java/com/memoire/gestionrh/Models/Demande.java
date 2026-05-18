@@ -5,7 +5,6 @@ import com.memoire.gestionrh.enums.TypeDemande;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 import jakarta.persistence.*;
@@ -35,39 +34,17 @@ public class Demande {
     @Enumerated(EnumType.STRING) 
     private StatutDemande statut = StatutDemande.EN_ATTENTE;
 
+    
     @ManyToOne
-    @JoinColumn(name = "utilidisateur_id")
+    @JoinColumn(name = "utilisateur_id")
     private Utilisateur utilisateur;
-    
-     @OneToMany(mappedBy = "demande")
-    private List<Validation> validations;
-    
-      @OneToMany(mappedBy = "demande")
-    private List<Justificatif> justificatifs;
 
-    public List<Validation> getValidations() {
-        return validations;
-    }
-     
-    public void setValidations(List<Validation> validations) {
-        this.validations = validations;
-    }
-
-    public List<Justificatif> getJustificatifs() {
-        return justificatifs;
-    }
-    public void setJustificatifs(List<Justificatif> justificatifs) {
-        this.justificatifs = justificatifs;
-    }
+    @OneToOne(mappedBy = "demande")
+    private Justificatif justificatif;
+    
     public Long getId() {
         return id;
      }
-    public StatutDemande getStatut() {
-        return statut;
-    }
-    public void setStatut(StatutDemande statut) {
-        this.statut = statut;
-    }
     public TypeDemande getTypeDemande() {
         return typeDemande;
     }
@@ -104,5 +81,21 @@ public class Demande {
     public void setUtilisateur(Utilisateur utilisateur) {
         this.utilisateur = utilisateur;
     }
+
+    public StatutDemande getStatut() {
+    return statut;
+}
+
+    public void setStatut(StatutDemande statut) {
+        this.statut = statut;
+}
+
+public Justificatif getJustificatif() {
+    return justificatif;
+}
+
+public void setJustificatif(Justificatif justificatif) {
+    this.justificatif = justificatif;
+}
 
 }

@@ -8,5 +8,6 @@ public class RegisterDTO {
     private String prenom;
     private String email;
     private String poste;
-    private Long serviceId;
+    private Long ServiceId;
+    private Long superieurId; // ID du supérieur hiérarchique (ex: chef de service)
 }

@@ -1,7 +1,6 @@
 package com.memoire.gestionrh.Models;
 
 import jakarta.persistence.*;
-import java.util.List;
 
 @Entity
 @Table(name = "departements")
@@ -13,8 +12,11 @@ public class Departement {
 
     private String nom;
     private String description;
-    @OneToMany(mappedBy = "departement")
-    private List<ServiceEN> services;
+    
+    @ManyToOne
+    @JoinColumn
+    (name = "service_id")
+    private service service;
 
      public Long getId() {
         return id;
@@ -31,12 +33,12 @@ public class Departement {
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    public void setServices(List<ServiceEN> services) {
-        this.services = services;
+    public service getService(){
+        return service;
     }
-    public List<ServiceEN> getServices() {
-        return services;
+    public void setService( service service){
+
+        this.service=service    ;
     }
     
 }
