@@ -1,6 +1,7 @@
 package com.memoire.gestionrh.DTO;
 
 import java.time.LocalDate;
+import java.util.UUID;
 import lombok.Data;
 
 import com.memoire.gestionrh.enums.TypeDemande;
@@ -12,6 +13,6 @@ public class DemandeDTO {
     private LocalDate dateDebut;
     private LocalDate dateFin;
     private String motif;
-    private Long utilisateurId;
-    
+    private UUID utilisateurId;
+
 }

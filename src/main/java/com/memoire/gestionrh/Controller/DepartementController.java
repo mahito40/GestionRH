@@ -9,44 +9,50 @@ import com.memoire.gestionrh.Models.Departement;
 import com.memoire.gestionrh.Service.DepartementService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/departements")
+@RequestMapping("/api/departements")
 public class DepartementController {
 
     @Autowired
     private DepartementService departementService;
 
     @PostMapping
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAnyRole('RH','ADMIN')")
     public Departement createDepartement(@RequestBody DepartementDTO dto) {
         return departementService.createDepartement(dto);
     }
+
     @GetMapping
-    @PreAuthorize("hasRole('RH')")
+    @PreAuthorize("hasAnyRole('RH','ADMIN')")
     public ResponseEntity<List<DepartementResponseDTO>> getTousLesDepartements() {
-    return ResponseEntity.ok(departementService.getTousLesDepartements());
+        return ResponseEntity.ok(departementService.getTousLesDepartements());
     }
+
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('RH')")
-    public ResponseEntity<Departement> getDepartementById(@PathVariable Long id) {
+    @PreAuthorize("hasAnyRole('RH','ADMIN')")
+    public ResponseEntity<Departement> getDepartementById(@PathVariable UUID id) {
         return ResponseEntity.ok(departementService.getDepartementParId(id));
     }
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('RH')")
-    public Departement updateDepartement(@PathVariable Long id,
-                                       @RequestBody DepartementDTO dto) {
+    @PreAuthorize("hasAnyRole('RH','ADMIN')")
+    public Departement updateDepartement(@PathVariable UUID id,
+            @RequestBody DepartementDTO dto) {
         return departementService.modifierDepartement(id, dto);
     }
+
     @PatchMapping("/{id}")
-    @PreAuthorize("hasRole('RH')")
-    public void patchDepartement(@PathVariable Long id,
-                                @RequestBody DepartementDTO dto) {
+    @PreAuthorize("hasAnyRole('RH','ADMIN')")
+    public void patchDepartement(@PathVariable UUID id,
+            @RequestBody DepartementDTO dto) {
         departementService.patchDepartement(id, dto);
-    }      
+    }
+
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('RH')")  
-    public void supprimerDepartement(@PathVariable Long id) {
+    @PreAuthorize("hasAnyRole('RH','ADMIN')")
+    public void supprimerDepartement(@PathVariable UUID id) {
         departementService.supprimerDepartement(id);
     }
 

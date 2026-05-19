@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,7 @@ public class HistoriqueValidationService {
     private final DemandeRepository demandeRepository;
     private final UtilisateursRepository utilisateurRepository;
 
-    public HistoriqueValidation validerDemande(Long demandeId, ValidationDTO dto) {
+    public HistoriqueValidation validerDemande(UUID demandeId, ValidationDTO dto) {
 
         Demande demande = demandeRepository.findById(demandeId)
                 .orElseThrow(() -> new RuntimeException("Demande introuvable"));
@@ -36,7 +37,7 @@ public class HistoriqueValidationService {
         return validationRepository.save(validation);
     }
 
-    public List<HistoriqueValidation> getValidationsByDemande(Long demandeId) {
+    public List<HistoriqueValidation> getValidationsByDemande(UUID demandeId) {
         return validationRepository.findByDemandeId(demandeId);
     }
 }

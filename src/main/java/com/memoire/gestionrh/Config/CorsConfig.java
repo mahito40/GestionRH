@@ -2,33 +2,39 @@ package com.memoire.gestionrh.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 public class CorsConfig {
 
     @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
+        // Origines Angular autorisées
+        config.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "http://127.0.0.1:4200",
+                "http://192.168.1.142:4200"));
 
-                registry.addMapping("/**")
+        // Méthodes autorisées (OPTIONS obligatoire pour les preflights)
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
-                        // Angular (port par défaut)
-                        .allowedOrigins("http://localhost:4200", "http://192.168.1.142:4200")
+        // Headers autorisés
+        config.setAllowedHeaders(List.of("*"));
 
-                        // Autoriser toutes les méthodes HTTP
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        // Exposer Authorization pour que le frontend puisse le lire
+        config.setExposedHeaders(List.of("Authorization"));
 
-                        // Autoriser les headers (important pour JWT)
-                        .allowedHeaders("*")
+        // Autoriser les cookies / credentials
+        config.setAllowCredentials(true);
 
-                        // Autoriser l'envoi de token JWT
-                        .allowCredentials(true);
-            }
-        };
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

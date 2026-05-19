@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NotificationService {
@@ -20,33 +21,32 @@ public class NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
 
     public NotificationService(NotificationRepository notificationRepository,
-                               UtilisateursRepository utilisateurRepository,    
-                               SimpMessagingTemplate messagingTemplate) {
+            UtilisateursRepository utilisateurRepository,
+            SimpMessagingTemplate messagingTemplate) {
         this.notificationRepository = notificationRepository;
         this.utilisateurRepository = utilisateurRepository;
         this.messagingTemplate = messagingTemplate;
     }
 
-    public void envoyerNotification(Long utilisateurId, String contenu) {
-    Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
-            .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    public void envoyerNotification(UUID utilisateurId, String contenu) {
+        Utilisateur utilisateur = utilisateurRepository.findById(utilisateurId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-    Notification notif = new Notification();
-    notif.setContenu(contenu);
-    notif.setDatenotif(LocalDateTime.now());
-    notif.setStatut(StatutNotification.NON_LU);
-    notif.setUtilisateur(utilisateur);
+        Notification notif = new Notification();
+        notif.setContenu(contenu);
+        notif.setDatenotif(LocalDateTime.now());
+        notif.setStatut(StatutNotification.NON_LU);
+        notif.setUtilisateur(utilisateur);
 
-    Notification saved = notificationRepository.save(notif);
+        Notification saved = notificationRepository.save(notif);
 
-    // ← envoie en temps réel via WebSocket
-    messagingTemplate.convertAndSend(
-        "/queue/notifications-" + utilisateurId,
-        saved
-    );
-}
+        // ← envoie en temps réel via WebSocket
+        messagingTemplate.convertAndSend(
+                "/queue/notifications-" + utilisateurId,
+                saved);
+    }
 
-    public List<Notification> getNotificationsParUtilisateur(Long utilisateurId) {
+    public List<Notification> getNotificationsParUtilisateur(UUID utilisateurId) {
         return notificationRepository.findByUtilisateurId(utilisateurId);
     }
 }

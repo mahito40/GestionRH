@@ -4,31 +4,28 @@ import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
-@Table(name = "justificatifs")
-public class Justificatif {
+@Table(name = "roles")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String path;
+    @Column(nullable = false, unique = true)
+    private String nom;
 
     private String description;
-
-    @OneToOne
-    @JoinColumn(name = "demande_id")
-    private Demande demande;
 
     public UUID getId() {
         return id;
     }
 
-    public String getPath() {
-        return path;
+    public String getNom() {
+        return nom;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setNom(String nom) {
+        this.nom = nom;
     }
 
     public String getDescription() {
@@ -37,13 +34,5 @@ public class Justificatif {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Demande getDemande() {
-        return demande;
-    }
-
-    public void setDemande(Demande demande) {
-        this.demande = demande;
     }
 }

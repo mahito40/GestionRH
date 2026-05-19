@@ -7,7 +7,9 @@ import com.memoire.gestionrh.DTO.DepartementDTO;
 import com.memoire.gestionrh.DTO.DepartementResponseDTO;
 import com.memoire.gestionrh.Models.Departement;
 import com.memoire.gestionrh.Repository.DepartementRepository;
+import com.memoire.gestionrh.Repository.ServiceRepository;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 public class DepartementService {
 
     private final DepartementRepository departementRepository;
+    private final ServiceRepository serviceRepository;
 
     public Departement createDepartement(DepartementDTO dto) {
         Departement dep = new Departement();
@@ -22,21 +25,24 @@ public class DepartementService {
         dep.setDescription(dto.getDescription());
         return departementRepository.save(dep);
     }
+
     public List<DepartementResponseDTO> getTousLesDepartements() {
         return departementRepository.findAll()
                 .stream()
                 .map(dep -> new DepartementResponseDTO(
-                    dep.getId(),
-                    dep.getNom(),
-                    dep.getDescription()
-                ))
+                        dep.getId(),
+                        dep.getNom(),
+                        dep.getDescription(),
+                        serviceRepository.countByDepartement_Id(dep.getId())))
                 .collect(Collectors.toList());
     }
-    public Departement getDepartementParId(Long id) {
+
+    public Departement getDepartementParId(UUID id) {
         return departementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Département non trouvé avec l'id : " + id));
     }
-    public Departement modifierDepartement(Long id, DepartementDTO dto) {
+
+    public Departement modifierDepartement(UUID id, DepartementDTO dto) {
         Departement dep = departementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Département non trouvé avec l'id : " + id));
 
@@ -45,7 +51,8 @@ public class DepartementService {
 
         return departementRepository.save(dep);
     }
-    public void patchDepartement(Long id, DepartementDTO dto) {
+
+    public void patchDepartement(UUID id, DepartementDTO dto) {
         Departement dep = departementRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Département non trouvé avec l'id : " + id));
 
@@ -57,7 +64,8 @@ public class DepartementService {
         }
         departementRepository.save(dep);
     }
-    public void supprimerDepartement(Long id) {
+
+    public void supprimerDepartement(UUID id) {
         departementRepository.deleteById(id);
     }
 

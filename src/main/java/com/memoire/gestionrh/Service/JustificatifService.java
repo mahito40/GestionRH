@@ -8,6 +8,7 @@ import com.memoire.gestionrh.Repository.JustificatifRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,8 +19,7 @@ public class JustificatifService {
 
     public JustificatifService(
             JustificatifRepository justificatifRepository,
-            DemandeRepository demandeRepository
-    ) {
+            DemandeRepository demandeRepository) {
         this.justificatifRepository = justificatifRepository;
         this.demandeRepository = demandeRepository;
     }
@@ -47,7 +47,7 @@ public class JustificatifService {
                 .collect(Collectors.toList());
     }
 
-    public JustificatifDTO afficherParId(Long id) {
+    public JustificatifDTO afficherParId(UUID id) {
 
         Justificatif justificatif = justificatifRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Justificatif introuvable"));
@@ -55,7 +55,7 @@ public class JustificatifService {
         return mapToDTO(justificatif);
     }
 
-    public void supprimer(Long id) {
+    public void supprimer(UUID id) {
         justificatifRepository.deleteById(id);
     }
 

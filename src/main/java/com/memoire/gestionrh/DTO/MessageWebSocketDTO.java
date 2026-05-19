@@ -2,13 +2,14 @@ package com.memoire.gestionrh.DTO;
 
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 public class MessageWebSocketDTO {
-    private Long id;
-    private Long expediteurId;
+    private UUID id;
+    private UUID expediteurId;
     private String expediteurNom;
-    private Long destinataireId;
+    private UUID destinataireId;
     private String contenu;
     private LocalDateTime dateEnvoi;
 }

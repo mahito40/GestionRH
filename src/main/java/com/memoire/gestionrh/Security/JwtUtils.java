@@ -22,15 +22,16 @@ public class JwtUtils {
     }
 
     // ── Générer un token ──
-   public String generateToken(String email, String poste) {
-    return Jwts.builder()
-            .setSubject(email)
-            .claim("poste", poste) // ← poste au lieu de role
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-            .compact();
-}
+    public String generateToken(String email, String poste, String role) {
+        return Jwts.builder()
+                .setSubject(email)
+                .claim("poste", poste) // ← gardé pour compatibilité frontend
+                .claim("role", role) // ← rôle pour autorisation
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     // ── Extraire l'email du token ──
     public String getEmailFromToken(String token) {
@@ -52,13 +53,23 @@ public class JwtUtils {
                 .get("poste");
     }
 
+    // ── Extraire le rôle du token ──
+    public String getRoleFromToken(String token) {
+        return (String) Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role");
+    }
+
     // ── Valider le token ──
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token);
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             return false;

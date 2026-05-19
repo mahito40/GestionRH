@@ -1,20 +1,22 @@
 package com.memoire.gestionrh.DTO;
 
+import java.util.UUID;
+
 public class JustificatifDTO {
 
-    private Long id;
+    private UUID id;
 
     private String path;
 
     private String description;
 
-    private Long demandeId;
+    private UUID demandeId;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -34,11 +36,11 @@ public class JustificatifDTO {
         this.description = description;
     }
 
-    public Long getDemandeId() {
+    public UUID getDemandeId() {
         return demandeId;
     }
 
-    public void setDemandeId(Long demandeId) {
+    public void setDemandeId(UUID demandeId) {
         this.demandeId = demandeId;
     }
 }

@@ -6,9 +6,8 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class DepartementResponseDTO {
+public class RoleResponseDTO {
     private UUID id;
     private String nom;
     private String description;
-    private long nbServices;
 }

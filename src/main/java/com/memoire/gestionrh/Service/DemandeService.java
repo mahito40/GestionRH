@@ -11,366 +11,352 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class DemandeService {
 
-    private final DemandeRepository demandeRepository;
-    private final UtilisateursRepository utilisateurRepository;
-    private final HistoriqueValidationRepository validationRepository;
-    private final NotificationService notificationService;
+        private final DemandeRepository demandeRepository;
+        private final UtilisateursRepository utilisateurRepository;
+        private final HistoriqueValidationRepository validationRepository;
+        private final NotificationService notificationService;
 
-    // ── Employé soumet une demande ──
-    public Demande soumettredemande(DemandeDTO dto) {
+        // ── Employé soumet une demande ──
+        public Demande soumettredemande(DemandeDTO dto) {
 
-        Utilisateur employe = utilisateurRepository.findById(dto.getUtilisateurId())
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+                Utilisateur employe = utilisateurRepository.findById(dto.getUtilisateurId())
+                                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        Demande demande = new Demande();
+                Demande demande = new Demande();
 
-        demande.setTypeDemande(dto.getTypeDemande());
-        demande.setDateDebut(dto.getDateDebut());
-        demande.setDateFin(dto.getDateFin());
-        demande.setMotif(dto.getMotif());
-        demande.setDateDemande(LocalDateTime.now());
-        demande.setStatut(StatutDemande.EN_ATTENTE);
-        demande.setUtilisateur(employe);
+                demande.setTypeDemande(dto.getTypeDemande());
+                demande.setDateDebut(dto.getDateDebut());
+                demande.setDateFin(dto.getDateFin());
+                demande.setMotif(dto.getMotif());
+                demande.setDateDemande(LocalDateTime.now());
+                demande.setStatut(StatutDemande.EN_ATTENTE);
+                demande.setUtilisateur(employe);
 
-        Demande saved = demandeRepository.save(demande);
+                Demande saved = demandeRepository.save(demande);
 
-        String poste = employe.getPoste();
+                String poste = employe.getPoste();
 
-        switch (poste) {
+                switch (poste) {
 
-            case "Employe" -> {
+                        case "Employe" -> {
+                                // Notification au responsable du service si l'employe a un service
+                                if (employe.getService() != null) {
+                                        notificationService.envoyerNotification(
+                                                        employe.getService().getId(),
+                                                        "Nouvelle demande de "
+                                                                        + employe.getNom() + " "
+                                                                        + employe.getPrenom()
+                                                                        + " : " + dto.getTypeDemande()
+                                                                        + " du " + dto.getDateDebut()
+                                                                        + " au " + dto.getDateFin());
+                                }
+                        }
 
-                if (employe.getSuperieur() != null) {
+                        case "Responsable" -> {
 
-                    notificationService.envoyerNotification(
-                            employe.getSuperieur().getId(),
+                                utilisateurRepository
+                                                .findByService_Departement_IdAndPoste(
+                                                                employe.getService().getDepartement().getId(),
+                                                                "ChefDepartement")
 
-                            "Nouvelle demande de "
-                                    + employe.getNom() + " "
-                                    + employe.getPrenom()
-                                    + " : " + dto.getTypeDemande()
-                                    + " du " + dto.getDateDebut()
-                                    + " au " + dto.getDateFin()
-                    );
+                                                .ifPresent(chef -> notificationService.envoyerNotification(
+
+                                                                chef.getId(),
+
+                                                                "Nouvelle demande du Responsable "
+                                                                                + employe.getNom()
+                                                                                + " "
+                                                                                + employe.getPrenom()
+                                                                                + " : "
+                                                                                + dto.getTypeDemande()
+                                                                                + " du "
+                                                                                + dto.getDateDebut()
+                                                                                + " au "
+                                                                                + dto.getDateFin()));
+                        }
+
+                        case "ChefDepartement" -> {
+
+                                utilisateurRepository.findByPoste("RH")
+
+                                                .forEach(rh -> notificationService.envoyerNotification(
+
+                                                                rh.getId(),
+
+                                                                "Nouvelle demande du Chef de département "
+                                                                                + employe.getNom()
+                                                                                + " "
+                                                                                + employe.getPrenom()
+                                                                                + " : "
+                                                                                + dto.getTypeDemande()
+                                                                                + " du "
+                                                                                + dto.getDateDebut()
+                                                                                + " au "
+                                                                                + dto.getDateFin()));
+                        }
+
+                        case "RH" -> {
+
+                                utilisateurRepository.findByPoste("DG")
+
+                                                .forEach(dg -> notificationService.envoyerNotification(
+
+                                                                dg.getId(),
+
+                                                                "Nouvelle demande du RH "
+                                                                                + employe.getNom()
+                                                                                + " "
+                                                                                + employe.getPrenom()
+                                                                                + " : "
+                                                                                + dto.getTypeDemande()
+                                                                                + " du "
+                                                                                + dto.getDateDebut()
+                                                                                + " au "
+                                                                                + dto.getDateFin()));
+                        }
+
+                        case "DG" -> {
+
+                                demande.setStatut(StatutDemande.APPROUVEE_RH);
+
+                                demandeRepository.save(demande);
+
+                                HistoriqueValidation validation = new HistoriqueValidation();
+
+                                validation.setDemande(saved);
+                                validation.setValidateur(employe);
+                                validation.setStatut(StatutValidation.APPROUVE);
+                                validation.setDateValidation(LocalDateTime.now());
+
+                                validationRepository.save(validation);
+
+                                notificationService.envoyerNotification(
+
+                                                employe.getId(),
+
+                                                "✓ Votre demande de "
+                                                                + dto.getTypeDemande()
+                                                                + " du "
+                                                                + dto.getDateDebut()
+                                                                + " au "
+                                                                + dto.getDateFin()
+                                                                + " a été approuvée automatiquement.");
+                        }
+
+                        default -> throw new RuntimeException("Poste inconnu : " + poste);
                 }
-            }
 
-            case "Responsable" -> {
+                return saved;
+        }
 
-                utilisateurRepository
-                    .findByService_Departement_IdAndPoste(
-                        employe.getService().getDepartement().getId(),
-                    "ChefDepartement"
-                        )
+        // ── Validation par le Responsable direct ──
+        public Demande validerParResponsable(UUID demandeId, ValidationDTO dto) {
 
-                        .ifPresent(chef -> notificationService.envoyerNotification(
+                Demande demande = demandeRepository.findById(demandeId)
 
-                                chef.getId(),
+                                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
-                                "Nouvelle demande du Responsable "
-                                        + employe.getNom()
-                                        + " "
-                                        + employe.getPrenom()
-                                        + " : "
-                                        + dto.getTypeDemande()
-                                        + " du "
-                                        + dto.getDateDebut()
-                                        + " au "
-                                        + dto.getDateFin()
-                        ));
-            }
+                Utilisateur validateur = utilisateurRepository.findById(dto.getValidateurId())
 
-            case "ChefDepartement" -> {
-
-                utilisateurRepository.findByPoste("RH")
-
-                        .forEach(rh -> notificationService.envoyerNotification(
-
-                                rh.getId(),
-
-                                "Nouvelle demande du Chef de département "
-                                        + employe.getNom()
-                                        + " "
-                                        + employe.getPrenom()
-                                        + " : "
-                                        + dto.getTypeDemande()
-                                        + " du "
-                                        + dto.getDateDebut()
-                                        + " au "
-                                        + dto.getDateFin()
-                        ));
-            }
-
-            case "RH" -> {
-
-                utilisateurRepository.findByPoste("DG")
-
-                        .forEach(dg -> notificationService.envoyerNotification(
-
-                                dg.getId(),
-
-                                "Nouvelle demande du RH "
-                                        + employe.getNom()
-                                        + " "
-                                        + employe.getPrenom()
-                                        + " : "
-                                        + dto.getTypeDemande()
-                                        + " du "
-                                        + dto.getDateDebut()
-                                        + " au "
-                                        + dto.getDateFin()
-                        ));
-            }
-
-            case "DG" -> {
-
-                demande.setStatut(StatutDemande.APPROUVEE_RH);
-
-                demandeRepository.save(demande);
+                                .orElseThrow(() -> new RuntimeException("Validateur non trouvé"));
 
                 HistoriqueValidation validation = new HistoriqueValidation();
 
-                validation.setDemande(saved);
-                validation.setValidateur(employe);
-                validation.setStatut(StatutValidation.APPROUVE);
+                validation.setDemande(demande);
+                validation.setValidateur(validateur);
+                validation.setStatut(dto.getStatut());
                 validation.setDateValidation(LocalDateTime.now());
 
                 validationRepository.save(validation);
 
-                notificationService.envoyerNotification(
+                if (dto.getStatut() == StatutValidation.APPROUVE) {
 
-                        employe.getId(),
+                        demande.setStatut(StatutDemande.APPROUVEE_RESPONSABLE);
 
-                        "✓ Votre demande de "
-                                + dto.getTypeDemande()
-                                + " du "
-                                + dto.getDateDebut()
-                                + " au "
-                                + dto.getDateFin()
-                                + " a été approuvée automatiquement."
-                );
-            }
+                        demandeRepository.save(demande);
 
-            default -> throw new RuntimeException("Poste inconnu : " + poste);
+                        // notification au chef de département
+
+                        utilisateurRepository
+
+                                        .findByService_Departement_IdAndPoste(
+
+                                                        demande.getUtilisateur()
+                                                                        .getService()
+                                                                        .getDepartement()
+                                                                        .getId(),
+
+                                                        "ChefDepartement")
+
+                                        .ifPresent(chef -> notificationService.envoyerNotification(
+
+                                                        chef.getId(),
+
+                                                        "La demande de "
+                                                                        + demande.getUtilisateur().getNom()
+                                                                        + " "
+                                                                        + demande.getUtilisateur().getPrenom()
+                                                                        + " a été approuvée par son responsable direct."
+                                                                        + " En attente de votre validation."));
+
+                } else {
+
+                        demande.setStatut(StatutDemande.REFUSEE_CHEF_DEPARTEMENT);
+
+                        demandeRepository.save(demande);
+
+                        notificationService.envoyerNotification(
+
+                                        demande.getUtilisateur().getId(),
+
+                                        "✗ Votre demande de "
+                                                        + demande.getTypeDemande()
+                                                        + " a été refusée par votre responsable direct.");
+                }
+
+                return demande;
         }
 
-        return saved;
-    }
+        // ── Validation par le Chef de département ──
+        public Demande validerParChefDepartement(UUID demandeId, ValidationDTO dto) {
 
-    // ── Validation par le Responsable direct ──
-    public Demande validerParResponsable(Long demandeId, ValidationDTO dto) {
+                Demande demande = demandeRepository.findById(demandeId)
 
-        Demande demande = demandeRepository.findById(demandeId)
+                                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+                Utilisateur validateur = utilisateurRepository.findById(dto.getValidateurId())
 
-        Utilisateur validateur = utilisateurRepository.findById(dto.getValidateurId())
+                                .orElseThrow(() -> new RuntimeException("Validateur non trouvé"));
 
-                .orElseThrow(() -> new RuntimeException("Validateur non trouvé"));
+                HistoriqueValidation validation = new HistoriqueValidation();
 
-        HistoriqueValidation validation = new HistoriqueValidation();
+                validation.setDemande(demande);
+                validation.setValidateur(validateur);
+                validation.setStatut(dto.getStatut());
+                validation.setDateValidation(LocalDateTime.now());
 
-        validation.setDemande(demande);
-        validation.setValidateur(validateur);
-        validation.setStatut(dto.getStatut());
-        validation.setDateValidation(LocalDateTime.now());
+                validationRepository.save(validation);
 
-        validationRepository.save(validation);
+                if (dto.getStatut() == StatutValidation.APPROUVE) {
 
-        if (dto.getStatut() == StatutValidation.APPROUVE) {
+                        demande.setStatut(StatutDemande.APPROUVEE_CHEF_DEPARTEMENT);
 
-            demande.setStatut(StatutDemande.APPROUVEE_RESPONSABLE);
+                        demandeRepository.save(demande);
 
-            demandeRepository.save(demande);
+                        utilisateurRepository.findByPoste("RH")
 
-            // notification au chef de département
+                                        .forEach(rh -> notificationService.envoyerNotification(
 
-            utilisateurRepository
+                                                        rh.getId(),
 
-                    .findByService_Departement_IdAndPoste(
+                                                        "La demande de "
+                                                                        + demande.getUtilisateur().getNom()
+                                                                        + " "
+                                                                        + demande.getUtilisateur().getPrenom()
+                                                                        + " a été approuvée par le chef de département."
+                                                                        + " En attente de votre validation."));
 
-                            demande.getUtilisateur()
-                                    .getService()
-                                    .getDepartement()
-                                    .getId(),
+                } else {
 
-                            "ChefDepartement"
-                    )
+                        demande.setStatut(StatutDemande.REFUSEE_RH);
 
-                    .ifPresent(chef -> notificationService.envoyerNotification(
+                        demandeRepository.save(demande);
 
-                            chef.getId(),
+                        notificationService.envoyerNotification(
 
-                            "La demande de "
-                                    + demande.getUtilisateur().getNom()
-                                    + " "
-                                    + demande.getUtilisateur().getPrenom()
-                                    + " a été approuvée par son responsable direct."
-                                    + " En attente de votre validation."
-                    ));
+                                        demande.getUtilisateur().getId(),
 
-        } else {
+                                        "✗ Votre demande de "
+                                                        + demande.getTypeDemande()
+                                                        + " a été refusée par le chef de département.");
+                }
 
-            demande.setStatut(StatutDemande.REFUSEE_CHEF_DEPARTEMENT);
-
-            demandeRepository.save(demande);
-
-            notificationService.envoyerNotification(
-
-                    demande.getUtilisateur().getId(),
-
-                    "✗ Votre demande de "
-                            + demande.getTypeDemande()
-                            + " a été refusée par votre responsable direct."
-            );
+                return demande;
         }
 
-        return demande;
-    }
+        // ── Validation par le RH ──
+        public Demande validerParRH(UUID demandeId, ValidationDTO dto) {
 
-    // ── Validation par le Chef de département ──
-    public Demande validerParChefDepartement(Long demandeId, ValidationDTO dto) {
+                Demande demande = demandeRepository.findById(demandeId)
 
-        Demande demande = demandeRepository.findById(demandeId)
+                                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+                Utilisateur validateur = utilisateurRepository.findById(dto.getValidateurId())
 
-        Utilisateur validateur = utilisateurRepository.findById(dto.getValidateurId())
+                                .orElseThrow(() -> new RuntimeException("Validateur non trouvé"));
 
-                .orElseThrow(() -> new RuntimeException("Validateur non trouvé"));
+                HistoriqueValidation validation = new HistoriqueValidation();
 
-        HistoriqueValidation validation = new HistoriqueValidation();
+                validation.setDemande(demande);
+                validation.setValidateur(validateur);
+                validation.setStatut(dto.getStatut());
+                validation.setDateValidation(LocalDateTime.now());
 
-        validation.setDemande(demande);
-        validation.setValidateur(validateur);
-        validation.setStatut(dto.getStatut());
-        validation.setDateValidation(LocalDateTime.now());
+                validationRepository.save(validation);
 
-        validationRepository.save(validation);
+                if (dto.getStatut() == StatutValidation.APPROUVE) {
 
-        if (dto.getStatut() == StatutValidation.APPROUVE) {
+                        demande.setStatut(StatutDemande.APPROUVEE_RH);
 
-            demande.setStatut(StatutDemande.APPROUVEE_CHEF_DEPARTEMENT);
+                        demandeRepository.save(demande);
 
-            demandeRepository.save(demande);
+                        notificationService.envoyerNotification(
 
-            utilisateurRepository.findByPoste("RH")
+                                        demande.getUtilisateur().getId(),
 
-                    .forEach(rh -> notificationService.envoyerNotification(
+                                        "✓ Votre demande de "
+                                                        + demande.getTypeDemande()
+                                                        + " du "
+                                                        + demande.getDateDebut()
+                                                        + " au "
+                                                        + demande.getDateFin()
+                                                        + " a été approuvée définitivement par le RH !");
 
-                            rh.getId(),
+                } else {
 
-                            "La demande de "
-                                    + demande.getUtilisateur().getNom()
-                                    + " "
-                                    + demande.getUtilisateur().getPrenom()
-                                    + " a été approuvée par le chef de département."
-                                    + " En attente de votre validation."
-                    ));
+                        demande.setStatut(StatutDemande.REFUSEE_RH);
 
-        } else {
+                        demandeRepository.save(demande);
 
-            demande.setStatut(StatutDemande.REFUSEE_RH);
+                        notificationService.envoyerNotification(
 
-            demandeRepository.save(demande);
+                                        demande.getUtilisateur().getId(),
 
-            notificationService.envoyerNotification(
+                                        "✗ Votre demande de "
+                                                        + demande.getTypeDemande()
+                                                        + " a été refusée par le RH.");
+                }
 
-                    demande.getUtilisateur().getId(),
-
-                    "✗ Votre demande de "
-                            + demande.getTypeDemande()
-                            + " a été refusée par le chef de département."
-            );
+                return demande;
         }
 
-        return demande;
-    }
+        // ── Récupérer toutes les demandes ──
+        public List<Demande> getToutesLesDemandes() {
 
-    // ── Validation par le RH ──
-    public Demande validerParRH(Long demandeId, ValidationDTO dto) {
-
-        Demande demande = demandeRepository.findById(demandeId)
-
-                .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
-
-        Utilisateur validateur = utilisateurRepository.findById(dto.getValidateurId())
-
-                .orElseThrow(() -> new RuntimeException("Validateur non trouvé"));
-
-        HistoriqueValidation validation = new HistoriqueValidation();
-
-        validation.setDemande(demande);
-        validation.setValidateur(validateur);
-        validation.setStatut(dto.getStatut());
-        validation.setDateValidation(LocalDateTime.now());
-
-        validationRepository.save(validation);
-
-        if (dto.getStatut() == StatutValidation.APPROUVE) {
-
-            demande.setStatut(StatutDemande.APPROUVEE_RH);
-
-            demandeRepository.save(demande);
-
-            notificationService.envoyerNotification(
-
-                    demande.getUtilisateur().getId(),
-
-                    "✓ Votre demande de "
-                            + demande.getTypeDemande()
-                            + " du "
-                            + demande.getDateDebut()
-                            + " au "
-                            + demande.getDateFin()
-                            + " a été approuvée définitivement par le RH !"
-            );
-
-        } else {
-
-            demande.setStatut(StatutDemande.REFUSEE_RH);
-
-            demandeRepository.save(demande);
-
-            notificationService.envoyerNotification(
-
-                    demande.getUtilisateur().getId(),
-
-                    "✗ Votre demande de "
-                            + demande.getTypeDemande()
-                            + " a été refusée par le RH."
-            );
+                return demandeRepository.findAll();
         }
 
-        return demande;
-    }
+        // ── Récupérer les demandes d'un utilisateur ──
+        public List<Demande> getDemandesParUtilisateur(UUID utilisateurId) {
 
-    // ── Récupérer toutes les demandes ──
-    public List<Demande> getToutesLesDemandes() {
+                return demandeRepository.findByUtilisateurId(utilisateurId);
+        }
 
-        return demandeRepository.findAll();
-    }
+        // ── Récupérer les demandes en attente ──
+        public List<Demande> getDemandesEnAttente() {
 
-    // ── Récupérer les demandes d'un utilisateur ──
-    public List<Demande> getDemandesParUtilisateur(Long utilisateurId) {
+                return demandeRepository.findByStatut(StatutDemande.EN_ATTENTE);
+        }
 
-        return demandeRepository.findByUtilisateurId(utilisateurId);
-    }
+        // ── Supprimer une demande ──
+        public void supprimerDemande(UUID id) {
 
-    // ── Récupérer les demandes en attente ──
-    public List<Demande> getDemandesEnAttente() {
-
-        return demandeRepository.findByStatut(StatutDemande.EN_ATTENTE);
-    }
-
-    // ── Supprimer une demande ──
-    public void supprimerDemande(Long id) {
-
-        demandeRepository.deleteById(id);
-    }
+                demandeRepository.deleteById(id);
+        }
 }

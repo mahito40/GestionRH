@@ -6,8 +6,10 @@ import com.memoire.gestionrh.DTO.ValidationDTO;
 import com.memoire.gestionrh.Service.HistoriqueValidationService;
 import com.memoire.gestionrh.Models.HistoriqueValidation;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("/api/validations")
 @RequiredArgsConstructor
@@ -18,15 +20,13 @@ public class HistoriqueValidationController {
 
     @PostMapping("/{demandeId}")
     public HistoriqueValidation valider(
-            @PathVariable Long demandeId,
-            @RequestBody ValidationDTO dto
-    ) {
+            @PathVariable UUID demandeId,
+            @RequestBody ValidationDTO dto) {
         return validationService.validerDemande(demandeId, dto);
     }
 
     @GetMapping("/{demandeId}")
-    public List<HistoriqueValidation> getByDemande(@PathVariable Long demandeId) {
+    public List<HistoriqueValidation> getByDemande(@PathVariable UUID demandeId) {
         return validationService.getValidationsByDemande(demandeId);
     }
 }
-    

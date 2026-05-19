@@ -1,44 +1,51 @@
 package com.memoire.gestionrh.Models;
 
 import jakarta.persistence.*;
+import java.util.List;
+import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "departements")
 public class Departement {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     private String nom;
     private String description;
-    
-    @ManyToOne
-    @JoinColumn
-    (name = "service_id")
-    private service service;
 
-     public Long getId() {
+    @JsonIgnore
+    @OneToMany(mappedBy = "departement")
+    private List<service> services;
+
+    public UUID getId() {
         return id;
-     }
-     public String getNom() {
+    }
+
+    public String getNom() {
         return nom;
-     }
-     public void setNom(String nom) {
+    }
+
+    public void setNom(String nom) {
         this.nom = nom;
-     }
+    }
+
     public String getDescription() {
         return description;
     }
+
     public void setDescription(String description) {
         this.description = description;
     }
-    public service getService(){
-        return service;
-    }
-    public void setService( service service){
 
-        this.service=service    ;
+    public List<service> getServices() {
+        return services;
     }
-    
+
+    public void setServices(List<service> services) {
+        this.services = services;
+    }
+
 }

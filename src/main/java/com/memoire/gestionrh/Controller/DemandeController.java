@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/demandes")
@@ -25,7 +26,7 @@ public class DemandeController {
     // ── Responsable direct valide ou refuse ──
     @PutMapping("/{id}/valider-responsable")
     public ResponseEntity<Demande> validerParResponsable(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody ValidationDTO dto) {
         return ResponseEntity.ok(demandeService.validerParResponsable(id, dto));
     }
@@ -33,7 +34,7 @@ public class DemandeController {
     // ── Chef département valide ou refuse ──
     @PutMapping("/{id}/valider-chef-departement")
     public ResponseEntity<Demande> validerParChefDepartement(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody ValidationDTO dto) {
         return ResponseEntity.ok(demandeService.validerParChefDepartement(id, dto));
     }
@@ -41,7 +42,7 @@ public class DemandeController {
     // ── RH valide ou refuse ──
     @PutMapping("/{id}/valider-rh")
     public ResponseEntity<Demande> validerParRH(
-            @PathVariable Long id,
+            @PathVariable UUID id,
             @RequestBody ValidationDTO dto) {
         return ResponseEntity.ok(demandeService.validerParRH(id, dto));
     }
@@ -55,7 +56,7 @@ public class DemandeController {
     // ── Demandes d'un employé ──
     @GetMapping("/utilisateur/{utilisateurId}")
     public ResponseEntity<List<Demande>> getDemandesParUtilisateur(
-            @PathVariable Long utilisateurId) {
+            @PathVariable UUID utilisateurId) {
         return ResponseEntity.ok(demandeService.getDemandesParUtilisateur(utilisateurId));
     }
 
@@ -67,7 +68,7 @@ public class DemandeController {
 
     // ── Supprimer une demande ──
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerDemande(@PathVariable Long id) {
+    public ResponseEntity<String> supprimerDemande(@PathVariable UUID id) {
         demandeService.supprimerDemande(id);
         return ResponseEntity.ok("Demande supprimée avec succès");
     }

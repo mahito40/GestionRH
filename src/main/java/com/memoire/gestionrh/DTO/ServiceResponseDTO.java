@@ -6,9 +6,10 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class DepartementResponseDTO {
+public class ServiceResponseDTO {
     private UUID id;
     private String nom;
     private String description;
-    private long nbServices;
+    private UUID departementId;
+    private long nbEmployes;
 }

@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +18,7 @@ public class MessageService {
 
     private final MessageRepository messageRepository;
     private final UtilisateursRepository utilisateursRepository;
-   private final SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
 
     // ── Envoyer un message ──
     public Message envoyerMessage(MessageDTO dto) {
@@ -31,17 +32,16 @@ public class MessageService {
 
         Message saved = messageRepository.save(message);
 
-         //← notifie en temps réel via WebSocket
-         messagingTemplate.convertAndSend(
-             "/queue/messages-" + dto.getUtilisateurId(),
-             saved
-         );
+        // ← notifie en temps réel via WebSocket
+        messagingTemplate.convertAndSend(
+                "/queue/messages-" + dto.getUtilisateurId(),
+                saved);
 
         return saved;
     }
 
     // ── Récupérer tous les messages d'un utilisateur ──
-    public List<Message> getMessagesParUtilisateur(Long utilisateurId) {
+    public List<Message> getMessagesParUtilisateur(UUID utilisateurId) {
         return messageRepository.findBySender_Id(utilisateurId);
     }
 
@@ -51,7 +51,7 @@ public class MessageService {
     }
 
     // ── Supprimer un message ──
-    public void supprimerMessage(Long id) {
+    public void supprimerMessage(UUID id) {
         messageRepository.deleteById(id);
     }
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -24,7 +25,7 @@ public class MessageController {
     // ── Récupérer tous les messages d'un utilisateur ──
     @GetMapping("/utilisateur/{utilisateurId}")
     public ResponseEntity<List<Message>> getMessagesParUtilisateur(
-            @PathVariable Long utilisateurId) {
+            @PathVariable UUID utilisateurId) {
         return ResponseEntity.ok(messageService.getMessagesParUtilisateur(utilisateurId));
     }
 
@@ -36,7 +37,7 @@ public class MessageController {
 
     // ── Supprimer un message ──
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> supprimerMessage(@PathVariable Long id) {
+    public ResponseEntity<String> supprimerMessage(@PathVariable UUID id) {
         messageService.supprimerMessage(id);
         return ResponseEntity.ok("Message supprimé avec succès");
     }
