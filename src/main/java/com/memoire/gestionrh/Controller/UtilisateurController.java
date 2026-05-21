@@ -42,7 +42,7 @@ public class UtilisateurController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('RH')")
     public void delete(@PathVariable UUID id) {
         utilisateurService.delete(id);
     }
