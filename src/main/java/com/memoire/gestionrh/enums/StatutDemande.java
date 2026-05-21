@@ -1,0 +1,20 @@
+package com.memoire.gestionrh.enums;
+
+public enum StatutDemande {
+
+    EN_ATTENTE_RESPONSABLE,
+    APPROUVEE_RESPONSABLE,
+    REFUSEE_RESPONSABLE,
+    
+    EN_ATTENTE_CHEF_DEPARTEMENT,
+    APPROUVEE_CHEF_DEPARTEMENT,
+    REFUSEE_CHEF_DEPARTEMENT,
+
+    EN_ATTENTE_RH,
+    APPROUVEE_RH,
+    REFUSEE_RH,
+
+    EN_ATTENTE,
+    VALIDER,
+    REFUSER
+}

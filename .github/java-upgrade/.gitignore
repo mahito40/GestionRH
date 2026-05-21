@@ -1,0 +1,41 @@
+# =========================
+# SPRING BOOT
+# =========================
+target/
+*.class
+*.log
+.mvn/
+
+# Fichiers sensibles
+application.properties
+application.yml
+application-secret.properties
+
+# =========================
+# ANGULAR
+# =========================
+node_modules/
+dist/
+.angular/
+coverage/
+
+# =========================
+# IDE / EDITEURS
+# =========================
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+# =========================
+# SYSTEME
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# ENV
+# =========================
+.env
