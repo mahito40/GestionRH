@@ -1,0 +1,97 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8 col-xl-7">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <a routerLink="/conges/mes-demandes" class="btn btn-light btn-sm"><i class="bi bi-arrow-left"></i></a>
+      <h4 class="fw-bold mb-0">Détail de la demande</h4>
+    </div>
+
+    <div *ngIf="!demande()" class="text-center py-5 text-muted">
+      <i class="bi bi-search fs-2 d-block mb-2"></i>Demande introuvable
+    </div>
+
+    <div *ngIf="demande() as d">
+      <!-- Statut banner -->
+      <div class="alert mb-4" [class.alert-warning]="d.statut==='en_attente'" [class.alert-success]="d.statut==='approuve'" [class.alert-danger]="d.statut==='rejete'">
+        <span *ngIf="d.statut==='en_attente'">⏳ <strong>En attente</strong> — En cours d'examen par votre manager</span>
+        <span *ngIf="d.statut==='approuve'">✅ <strong>Approuvé</strong> par {{ d.validateurNom }} le {{ d.dateValidation }}</span>
+        <span *ngIf="d.statut==='rejete'">❌ <strong>Rejeté</strong> par {{ d.validateurNom }} le {{ d.dateValidation }}</span>
+      </div>
+
+      <!-- Infos demande -->
+      <div class="card mb-3">
+        <div class="card-header"><h6 class="mb-0 fw-bold"><i class="bi bi-file-text me-2"></i>Informations</h6></div>
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-6 col-md-4">
+              <div class="text-muted" style="font-size:.8rem">Employé</div>
+              <div class="fw-semibold">{{ d.employePrenom }} {{ d.employeNom }}</div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="text-muted" style="font-size:.8rem">Département</div>
+              <div class="fw-semibold">{{ d.departement }}</div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="text-muted" style="font-size:.8rem">Type</div>
+              <div class="fw-semibold">{{ typeLabels[d.type] }}</div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="text-muted" style="font-size:.8rem">Date de début</div>
+              <div class="fw-semibold">{{ d.dateDebut }}</div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="text-muted" style="font-size:.8rem">Date de fin</div>
+              <div class="fw-semibold">{{ d.dateFin }}</div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="text-muted" style="font-size:.8rem">Durée</div>
+              <div class="fw-semibold">{{ d.nbJours }} jour(s)</div>
+            </div>
+            <div class="col-12">
+              <div class="text-muted" style="font-size:.8rem">Motif</div>
+              <div class="fw-semibold">{{ d.motif }}</div>
+            </div>
+            <div class="col-12">
+              <div class="text-muted" style="font-size:.8rem">Date de soumission</div>
+              <div class="fw-semibold">{{ d.dateDemande }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commentaire validateur (si décision prise) -->
+      <div *ngIf="d.commentaireValidateur" class="card mb-3">
+        <div class="card-header"><h6 class="mb-0 fw-bold"><i class="bi bi-chat-left-text me-2"></i>Commentaire du validateur</h6></div>
+        <div class="card-body">
+          <p class="mb-0">{{ d.commentaireValidateur }}</p>
+          <div class="text-muted mt-2" style="font-size:.8rem">— {{ d.validateurNom }}, {{ d.dateValidation }}</div>
+        </div>
+      </div>
+
+      <!-- Zone de validation (manager/rh/admin) -->
+      <div *ngIf="canValidate() && !actionDone()" class="card border-warning">
+        <div class="card-header bg-warning bg-opacity-10">
+          <h6 class="mb-0 fw-bold text-warning"><i class="bi bi-shield-check me-2"></i>Décision de validation</h6>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Commentaire (optionnel)</label>
+            <textarea class="form-control" [(ngModel)]="commentaire" rows="3" placeholder="Laissez un commentaire pour l'employé..."></textarea>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-success flex-fill" (click)="valider('approuve')">
+              <i class="bi bi-check-circle me-2"></i>Approuver
+            </button>
+            <button class="btn btn-danger flex-fill" (click)="valider('rejete')">
+              <i class="bi bi-x-circle me-2"></i>Rejeter
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="actionDone()" class="alert alert-success mt-3">
+        <i class="bi bi-check-all me-2"></i>Décision enregistrée avec succès.
+        <a routerLink="/conges/validation" class="ms-2">Retour à la liste</a>
+      </div>
+    </div>
+  </div>
+</div>

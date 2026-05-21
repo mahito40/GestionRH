@@ -1,0 +1,95 @@
+<div>
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="fw-bold mb-0">Mes demandes</h4>
+      <p class="text-muted mb-0" style="font-size:.85rem">Historique de vos congés et permissions</p>
+    </div>
+    <a routerLink="/conges/nouvelle-demande" class="btn btn-primary">
+      <i class="bi bi-plus me-2"></i>Nouvelle demande
+    </a>
+  </div>
+
+  <!-- Filtres -->
+  <div class="card mb-3">
+    <div class="card-body py-2">
+      <div class="row g-2">
+        <div class="col-12 col-sm-6 col-md-4">
+          <select class="form-select form-select-sm" [ngModel]="filtreStatut()" (ngModelChange)="filtreStatut.set($event)">
+            <option value="">Tous les statuts</option>
+            <option value="en_attente">En attente</option>
+            <option value="approuve">Approuvé</option>
+            <option value="rejete">Rejeté</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
+          <select class="form-select form-select-sm" [ngModel]="filtreType()" (ngModelChange)="filtreType.set($event)">
+            <option value="">Tous les types</option>
+            <option value="conge_annuel">Congé annuel</option>
+            <option value="conge_maladie">Congé maladie</option>
+            <option value="permission">Permission</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table desktop -->
+  <div class="card d-none d-md-block">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr>
+            <th *ngIf="auth.hasRole('rh','admin')">Employé</th>
+            <th>Type</th><th>Début</th><th>Fin</th><th>Durée</th><th>Soumis le</th><th>Statut</th><th></th>
+          </tr></thead>
+          <tbody>
+            <tr *ngFor="let d of demandes">
+              <td *ngIf="auth.hasRole('rh','admin')">
+                <div class="fw-semibold">{{ d.employePrenom }} {{ d.employeNom }}</div>
+                <div class="text-muted" style="font-size:.78rem">{{ d.departement }}</div>
+              </td>
+              <td>{{ getLabel(d.type) }}</td>
+              <td>{{ d.dateDebut }}</td>
+              <td>{{ d.dateFin }}</td>
+              <td><span class="badge bg-light text-dark">{{ d.nbJours }}j</span></td>
+              <td>{{ d.dateDemande }}</td>
+              <td>
+                <span class="badge-pending" *ngIf="d.statut==='en_attente'">⏳ En attente</span>
+                <span class="badge-approved" *ngIf="d.statut==='approuve'">✅ Approuvé</span>
+                <span class="badge-rejected" *ngIf="d.statut==='rejete'">❌ Rejeté</span>
+              </td>
+              <td><a [routerLink]="['/conges/detail', d.id]" class="btn btn-sm btn-outline-primary">Détail</a></td>
+            </tr>
+            <tr *ngIf="demandes.length===0">
+              <td colspan="8" class="text-center py-5 text-muted">
+                <i class="bi bi-inbox fs-2 d-block mb-2"></i>Aucune demande trouvée
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cards mobile -->
+  <div class="d-md-none">
+    <div *ngFor="let d of demandes" class="card mb-2">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <div class="fw-semibold">{{ getLabel(d.type) }}</div>
+            <div class="text-muted" style="font-size:.78rem">{{ d.dateDebut }} → {{ d.dateFin }} ({{ d.nbJours }}j)</div>
+          </div>
+          <span class="badge-pending" *ngIf="d.statut==='en_attente'">⏳</span>
+          <span class="badge-approved" *ngIf="d.statut==='approuve'">✅</span>
+          <span class="badge-rejected" *ngIf="d.statut==='rejete'">❌</span>
+        </div>
+        <a [routerLink]="['/conges/detail', d.id]" class="btn btn-sm btn-outline-primary">Voir le détail</a>
+      </div>
+    </div>
+    <div *ngIf="demandes.length===0" class="text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-2 d-block mb-2"></i>Aucune demande
+    </div>
+  </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-8 col-xl-7">
+
+    <!-- Success -->
+    <div *ngIf="success()" class="card text-center p-5 mb-4">
+      <div style="font-size:3rem">✅</div>
+      <h4 class="mt-3 fw-bold text-success">Demande soumise !</h4>
+      <p class="text-muted">Votre demande a été transmise pour validation. Vous serez notifié dès qu'une décision sera prise.</p>
+      <p class="text-muted" style="font-size:.85rem">Redirection en cours...</p>
+    </div>
+
+    <div *ngIf="!success()">
+      <!-- Header -->
+      <div class="d-flex align-items-center gap-3 mb-4">
+        <a routerLink="/conges/mes-demandes" class="btn btn-light btn-sm"><i class="bi bi-arrow-left"></i></a>
+        <div>
+          <h4 class="mb-0 fw-bold">Nouvelle demande</h4>
+          <p class="text-muted mb-0" style="font-size:.85rem">Congé ou permission</p>
+        </div>
+      </div>
+
+      <div *ngIf="error()" class="alert alert-danger d-flex align-items-center gap-2">
+        <i class="bi bi-exclamation-circle-fill"></i> {{ error() }}
+      </div>
+
+      <div class="card">
+        <div class="card-body p-4">
+          <form (ngSubmit)="onSubmit()">
+            <!-- Type -->
+            <div class="mb-3">
+              <label class="form-label">Type de demande <span class="text-danger">*</span></label>
+              <select class="form-select" [(ngModel)]="form.type" name="type" required>
+                <option value="">Sélectionnez un type...</option>
+                <option *ngFor="let t of types" [value]="t.value">{{ t.label }}</option>
+              </select>
+            </div>
+
+            <!-- Dates -->
+            <div class="row g-3 mb-3">
+              <div class="col-6">
+                <label class="form-label">Date de début <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" [(ngModel)]="form.dateDebut" name="dateDebut" [min]="todayStr" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label">Date de fin <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" [(ngModel)]="form.dateFin" name="dateFin" [min]="form.dateDebut || todayStr" required>
+              </div>
+            </div>
+
+            <!-- Résumé durée -->
+            <div *ngIf="nbJours > 0" class="alert alert-info py-2 mb-3" style="font-size:.85rem">
+              <i class="bi bi-info-circle me-2"></i>
+              Durée : <strong>{{ nbJours }} jour(s) ouvré(s)</strong>
+            </div>
+
+            <!-- Motif -->
+            <div class="mb-3">
+              <label class="form-label">Motif <span class="text-danger">*</span></label>
+              <textarea class="form-control" [(ngModel)]="form.motif" name="motif" rows="3" placeholder="Décrivez brièvement la raison de votre demande..." required></textarea>
+            </div>
+
+            <!-- Justificatif -->
+            <div class="mb-4">
+              <label class="form-label">Justificatif (optionnel)</label>
+              <input type="file" class="form-control" accept=".pdf,.jpg,.png">
+              <div class="form-text">Formats acceptés : PDF, JPG, PNG. Max 5 Mo.</div>
+            </div>
+
+            <!-- Infos solde -->
+            <div class="bg-light rounded p-3 mb-4">
+              <h6 class="mb-2 fw-semibold" style="font-size:.85rem">Votre solde actuel</h6>
+              <div class="row g-2">
+                <div class="col-6">
+                  <div style="font-size:.8rem;color:#64748b">Congés annuels</div>
+                  <div class="fw-bold text-primary">{{ auth.currentUser()?.soldeConges }} jours</div>
+                </div>
+                <div class="col-6">
+                  <div style="font-size:.8rem;color:#64748b">Permissions</div>
+                  <div class="fw-bold text-success">{{ auth.currentUser()?.soldePermissions }} jours</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary flex-fill">
+                <i class="bi bi-send me-2"></i>Soumettre la demande
+              </button>
+              <a routerLink="/conges/mes-demandes" class="btn btn-outline-secondary">Annuler</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

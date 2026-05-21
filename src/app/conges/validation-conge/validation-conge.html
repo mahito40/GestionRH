@@ -1,0 +1,84 @@
+<div>
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="fw-bold mb-0">Validation des demandes</h4>
+      <p class="text-muted mb-0" style="font-size:.85rem">Approuver ou rejeter les demandes de congé</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span class="badge bg-warning text-dark">{{ congeService.getEnAttente().length }} en attente</span>
+    </div>
+  </div>
+
+  <!-- Filtre statut -->
+  <div class="card mb-3">
+    <div class="card-body py-2">
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-sm" [class.btn-warning]="filtre()==='en_attente'" [class.btn-outline-warning]="filtre()!=='en_attente'" (click)="filtre.set('en_attente')">⏳ En attente</button>
+        <button class="btn btn-sm" [class.btn-success]="filtre()==='approuve'" [class.btn-outline-success]="filtre()!=='approuve'" (click)="filtre.set('approuve')">✅ Approuvées</button>
+        <button class="btn btn-sm" [class.btn-danger]="filtre()==='rejete'" [class.btn-outline-danger]="filtre()!=='rejete'" (click)="filtre.set('rejete')">❌ Rejetées</button>
+        <button class="btn btn-sm" [class.btn-secondary]="filtre()==='' " [class.btn-outline-secondary]="filtre()!==''" (click)="filtre.set('')">Toutes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste -->
+  <div class="row g-3">
+    <div class="col-12 col-md-6 col-xl-4" *ngFor="let d of demandes">
+      <div class="card h-100" [class.border-warning]="d.statut==='en_attente'">
+        <div class="card-body">
+          <div class="d-flex align-items-start justify-content-between mb-2">
+            <div>
+              <div class="fw-bold">{{ d.employePrenom }} {{ d.employeNom }}</div>
+              <div class="text-muted" style="font-size:.78rem">{{ d.departement }}</div>
+            </div>
+            <span class="badge-pending" *ngIf="d.statut==='en_attente'">⏳</span>
+            <span class="badge-approved" *ngIf="d.statut==='approuve'">✅</span>
+            <span class="badge-rejected" *ngIf="d.statut==='rejete'">❌</span>
+          </div>
+          <div class="mb-1" style="font-size:.85rem"><i class="bi bi-tag me-1 text-muted"></i>{{ typeLabels[d.type] }}</div>
+          <div class="mb-1" style="font-size:.85rem"><i class="bi bi-calendar me-1 text-muted"></i>{{ d.dateDebut }} → {{ d.dateFin }}</div>
+          <div class="mb-2" style="font-size:.85rem"><i class="bi bi-clock me-1 text-muted"></i>{{ d.nbJours }} jour(s)</div>
+          <div class="text-muted mb-3" style="font-size:.8rem">"{{ d.motif }}"</div>
+          <div class="d-flex gap-2">
+            <button *ngIf="d.statut==='en_attente'" class="btn btn-sm btn-success flex-fill" (click)="selectionner(d)">
+              <i class="bi bi-check2 me-1"></i>Valider
+            </button>
+            <a [routerLink]="['/conges/detail', d.id]" class="btn btn-sm btn-outline-primary flex-fill">Détail</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="demandes.length===0" class="col-12 text-center py-5 text-muted">
+      <i class="bi bi-inbox fs-2 d-block mb-2"></i>Aucune demande dans cette catégorie
+    </div>
+  </div>
+</div>
+
+<!-- Modal validation rapide -->
+<div *ngIf="demandeSelectionnee() as d" class="modal show d-block" style="background:rgba(0,0,0,0.5)">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-radius:16px">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Valider la demande</h5>
+        <button class="btn-close" (click)="fermer()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="bg-light rounded p-3 mb-3">
+          <div class="fw-semibold">{{ d.employePrenom }} {{ d.employeNom }}</div>
+          <div class="text-muted" style="font-size:.85rem">{{ typeLabels[d.type] }} · {{ d.nbJours }} jour(s)</div>
+          <div class="text-muted" style="font-size:.85rem">{{ d.dateDebut }} → {{ d.dateFin }}</div>
+          <div class="mt-2" style="font-size:.85rem">{{ d.motif }}</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Commentaire (optionnel)</label>
+          <textarea class="form-control" [(ngModel)]="commentaire" rows="3" placeholder="Laissez un commentaire..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer border-0 gap-2">
+        <button class="btn btn-outline-secondary" (click)="fermer()">Annuler</button>
+        <button class="btn btn-danger" (click)="valider('rejete')"><i class="bi bi-x-circle me-1"></i>Rejeter</button>
+        <button class="btn btn-success" (click)="valider('approuve')"><i class="bi bi-check-circle me-1"></i>Approuver</button>
+      </div>
+    </div>
+  </div>
+</div>
