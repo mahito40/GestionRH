@@ -38,18 +38,6 @@ public class SecurityConfig {
                                                 // ── Preflights CORS ──
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**")
                                                 .permitAll()
-                                                // ── Public ──
-                                                .requestMatchers(HttpMethod.PUT,
-                                                "/{id}/valider-responsable")
-                                                .hasAuthority("responsable")
-
-                                                 .requestMatchers(HttpMethod.PUT,
-                                                  "/{id}/valider-chef-departement")
-                                                .hasAuthority("Chef département")
-
-                                                 .requestMatchers(HttpMethod.PUT,
-                                                 "/{id}/valider-rh")
-                                                .hasAuthority("RH")
                                                 .requestMatchers("/api/auth/login").permitAll()
                                                 .requestMatchers("/api/auth/change-password").authenticated()
                                                 .requestMatchers("/ws/**").permitAll()
@@ -64,7 +52,6 @@ public class SecurityConfig {
                                                 // ── Tout le reste → authentifié ──
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-                                
 
                 return http.build();
         }

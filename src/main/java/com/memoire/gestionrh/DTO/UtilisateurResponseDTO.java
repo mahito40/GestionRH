@@ -13,6 +13,7 @@ public class UtilisateurResponseDTO {
     private String email;
     private String poste;
     private UUID serviceId;
+    private UUID departementId;
     private Boolean premiereCo;
     private RoleResponseDTO role;
 }

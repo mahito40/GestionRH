@@ -96,6 +96,11 @@ public class UtilisateurService {
                     utilisateur.getRole().getDescription());
         }
 
+        UUID departementId = null;
+        if (utilisateur.getService() != null && utilisateur.getService().getDepartement() != null) {
+            departementId = utilisateur.getService().getDepartement().getId();
+        }
+
         return new UtilisateurResponseDTO(
                 utilisateur.getId(),
                 utilisateur.getNom(),
@@ -103,6 +108,7 @@ public class UtilisateurService {
                 utilisateur.getEmail(),
                 utilisateur.getPoste(),
                 utilisateur.getService() != null ? utilisateur.getService().getId() : null,
+                departementId,
                 utilisateur.getIsfirstlogin(),
                 role);
     }
