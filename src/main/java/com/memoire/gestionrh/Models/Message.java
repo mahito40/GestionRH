@@ -3,6 +3,8 @@ package com.memoire.gestionrh.Models;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -16,8 +18,6 @@ public class Message {
     @Column(columnDefinition = "TEXT")
     private String contenu;
 
-    @Column(name = "date_envoi")
-    private LocalDateTime dateEnvoi;
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
@@ -26,6 +26,19 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private Utilisateur receiver;
+    @ManyToOne
+    @JoinColumn(name = "conversation_id")
+     private Conversation conversation;
+
+     @CreationTimestamp
+@Column(name = "date_envoi", updatable = false)
+private LocalDateTime dateEnvoi;
+
+@Column(name = "lu")
+private boolean lu = false;
+
+public boolean isLu() { return lu; }
+public void setLu(boolean lu) { this.lu = lu; }
 
     public UUID getId() {
         return id;
@@ -43,10 +56,6 @@ public class Message {
         return dateEnvoi;
     }
 
-    public void setDateEnvoi(LocalDateTime dateEnvoi) {
-        this.dateEnvoi = dateEnvoi;
-    }
-
     public Utilisateur getSender() {
         return sender;
     }
@@ -61,5 +70,11 @@ public class Message {
 
     public void setReceiver(Utilisateur receiver) {
         this.receiver = receiver;
+    }
+    public Conversation getConversation() {
+        return conversation;
+    }
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
     }
 }

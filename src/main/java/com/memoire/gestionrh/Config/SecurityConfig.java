@@ -16,43 +16,54 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // ← permet @PreAuthorize
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-        private final JwtFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
-        @Bean
-        public BCryptPasswordEncoder passwordEncoder() {
-                return new BCryptPasswordEncoder();
-        }
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-                http
-                                .cors(Customizer.withDefaults())
-                                .csrf(csrf -> csrf.disable())
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .authorizeHttpRequests(auth -> auth
-                                                // ── Preflights CORS ──
-                                                .requestMatchers(HttpMethod.OPTIONS, "/**")
-                                                .permitAll()
-                                                .requestMatchers("/api/auth/login").permitAll()
-                                                .requestMatchers("/api/auth/change-password").authenticated()
-                                                .requestMatchers("/ws/**").permitAll()
-                                                // ── Swagger ──
-                                                .requestMatchers(
-                                                                "/swagger-ui/**",
-                                                                "/swagger-ui.html",
-                                                                "/v3/api-docs/**",
-                                                                "/swagger-resources/**",
-                                                                "/webjars/**")
-                                                .permitAll()
-                                                // ── Tout le reste → authentifié ──
-                                                .anyRequest().authenticated())
-                                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .cors(Customizer.withDefaults())
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                // ── Preflights CORS ──
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // ── Auth ──
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/change-password").authenticated()
+                // ── Conversations : tout utilisateur authentifié peut créer ──
+                .requestMatchers(HttpMethod.GET, "/api/conversations/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/conversations/**").authenticated()
+                .requestMatchers(HttpMethod.PUT, "/api/conversations/**").authenticated()
+                .requestMatchers(HttpMethod.PATCH, "/api/conversations/**").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/conversations/**").authenticated()
+                // ── WebSocket + SockJS ──
+                .requestMatchers(
+                    "/ws/**",
+                    "/ws/info",
+                    "/ws/info/**"
+                ).permitAll()
+                // ── Swagger ──
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
+                // ── Tout le reste → authentifié ──
+                .anyRequest().authenticated())
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-                return http.build();
-        }
+        return http.build();
+    }
 }

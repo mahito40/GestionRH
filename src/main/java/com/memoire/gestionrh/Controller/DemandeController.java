@@ -133,4 +133,13 @@ public class DemandeController {
                 .body(pdf);
     }
 
+    // ── Modifier une demande ──
+    @PutMapping("/{id}")
+public ResponseEntity<Demande> modifierDemande(
+        @PathVariable UUID id,
+        @RequestBody DemandeDTO dto) {
+
+    return ResponseEntity.ok(demandeService.modifierDemande(id, dto));
+}
+
 }

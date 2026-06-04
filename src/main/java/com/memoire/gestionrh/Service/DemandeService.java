@@ -39,17 +39,18 @@ public class DemandeService {
 
         Demande saved = demandeRepository.save(demande);
 
-        String role = employe.getRole().getNom().toLowerCase(); // ← normalisation unique
+        // Normalisation : toLowerCase() pour comparer peu importe la casse en BDD
+        String role = employe.getRole().getNom().toLowerCase();
 
         switch (role) {
 
+            // ── EMPLOYE → notifie son Responsable ──
             case "employe" -> {
-                // Notifie le responsable du service de l'employé
                 if (employe.getService() != null) {
                     utilisateurRepository
-                            .findByService_IdAndRole_Nom(
+                            .findByService_IdAndRole_NomIgnoreCase(
                                     employe.getService().getId(),
-                                    "responsable") // ← UUID utilisateur, pas service
+                                    "RESPONSABLE")
                             .ifPresent(responsable ->
                                     notificationService.envoyerNotification(
                                             responsable.getId(),
@@ -62,12 +63,12 @@ public class DemandeService {
                 }
             }
 
-            case "chef département" -> {
-                // Notifie le chef de département
+            // ── RESPONSABLE → notifie le Chef de département ──
+            case "responsable" -> {
                 utilisateurRepository
-                        .findByService_Departement_IdAndRole_Nom(
+                        .findByService_Departement_IdAndRole_NomIgnoreCase(
                                 employe.getService().getDepartement().getId(),
-                                "Chef département")
+                                "CHEF DÉPARTEMENT")
                         .ifPresent(chef ->
                                 notificationService.envoyerNotification(
                                         chef.getId(),
@@ -79,9 +80,9 @@ public class DemandeService {
                                                 + " au " + dto.getDateFin()));
             }
 
-            case "Chef département" -> {
-                // Notifie tous les RH
-                utilisateurRepository.findByRole_Nom("rh")
+            // ── CHEF DÉPARTEMENT → notifie tous les RH ──
+            case "chef département" -> {
+                utilisateurRepository.findByRole_NomIgnoreCase("RH")
                         .forEach(rh ->
                                 notificationService.envoyerNotification(
                                         rh.getId(),
@@ -93,8 +94,8 @@ public class DemandeService {
                                                 + " au " + dto.getDateFin()));
             }
 
-            case "RH" -> {
-                // Le RH est le niveau final : demande auto-approuvée
+            // ── RH → niveau final, demande auto-approuvée ──
+            case "rh" -> {
                 demande.setStatut(StatutDemande.APPROUVEE_RH);
                 demandeRepository.save(demande);
 
@@ -114,7 +115,8 @@ public class DemandeService {
                                 + " a été approuvée automatiquement.");
             }
 
-            default -> throw new RuntimeException("Role inconnu : " + employe.getRole().getNom());
+            default -> throw new RuntimeException(
+                    "Rôle inconnu : " + employe.getRole().getNom());
         }
 
         return saved;
@@ -141,10 +143,11 @@ public class DemandeService {
             demande.setStatut(StatutDemande.APPROUVEE_RESPONSABLE);
             demandeRepository.save(demande);
 
+            // Notifie le Chef de département
             utilisateurRepository
-                    .findByService_Departement_IdAndRole_Nom(
+                    .findByService_Departement_IdAndRole_NomIgnoreCase(
                             demande.getUtilisateur().getService().getDepartement().getId(),
-                            "chefdepartement")
+                            "CHEF DÉPARTEMENT")
                     .ifPresent(chef ->
                             notificationService.envoyerNotification(
                                     chef.getId(),
@@ -189,7 +192,8 @@ public class DemandeService {
             demande.setStatut(StatutDemande.APPROUVEE_CHEF_DEPARTEMENT);
             demandeRepository.save(demande);
 
-            utilisateurRepository.findByRole_Nom("rh")
+            // Notifie tous les RH
+            utilisateurRepository.findByRole_NomIgnoreCase("RH")
                     .forEach(rh ->
                             notificationService.envoyerNotification(
                                     rh.getId(),
@@ -275,4 +279,24 @@ public class DemandeService {
     public void supprimerDemande(UUID id) {
         demandeRepository.deleteById(id);
     }
+    // ── Modifier une demande (uniquement si EN_ATTENTE) ──
+public Demande modifierDemande(UUID demandeId, DemandeDTO dto) {
+
+    Demande demande = demandeRepository.findById(demandeId)
+            .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
+
+    // Sécurité : on ne peut modifier que si personne n'a encore validé
+    if (demande.getStatut() != StatutDemande.EN_ATTENTE) {
+        throw new RuntimeException(
+                "Impossible de modifier une demande avec le statut : "
+                + demande.getStatut());
+    }
+
+    demande.setTypeDemande(dto.getTypeDemande());
+    demande.setDateDebut(dto.getDateDebut());
+    demande.setDateFin(dto.getDateFin());
+    demande.setMotif(dto.getMotif());
+
+    return demandeRepository.save(demande);
+}
 }

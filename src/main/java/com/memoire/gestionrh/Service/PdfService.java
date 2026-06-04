@@ -34,13 +34,12 @@ public class PdfService {
     private final DemandeRepository demandeRepository;
 
     private static final DateTimeFormatter FMT      = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static final DateTimeFormatter FMT_LONG = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    // private static final DateTimeFormatter FMT_LONG = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     // ── Couleurs ──
     private static final DeviceRgb VERT        = new DeviceRgb(34, 139, 34);
     private static final DeviceRgb VERT_CLAIR  = new DeviceRgb(220, 240, 220);
     private static final DeviceRgb GRIS_CLAIR  = new DeviceRgb(240, 240, 240);
-    private static final DeviceRgb NOIR        = new DeviceRgb(0, 0, 0);
 
     public byte[] genererPdfDemande(UUID demandeId) throws Exception {
 

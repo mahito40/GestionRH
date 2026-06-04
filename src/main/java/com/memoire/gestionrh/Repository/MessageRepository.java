@@ -10,6 +10,12 @@ import java.util.UUID;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
 
+    List<Message> findByConversationIdOrderByDateEnvoiAsc(UUID conversationId);
+
+    // Messages non lus (envoyés par l'autre participant)
+    List<Message> findByConversationIdAndLuFalseAndSenderIdNot(UUID conversationId, UUID senderId);
+
+
     List<Message> findBySender_Id(UUID id);
 
     List<Message> findByReceiver_Id(UUID id);
