@@ -231,6 +231,17 @@ public class DemandeService {
         validation.setValidateur(validateur);
         validation.setStatut(dto.getStatut());
         validation.setDateValidation(LocalDateTime.now());
+        validation.setNomRemplacant(dto.getNomRemplacant());
+        validation.setDebutCollaboration(dto.getDebutCollaboration());
+validation.setNombreJoursConsommes(dto.getNombreJoursConsommes());
+validation.setDateDerniersConges(dto.getDateDerniersConges());
+validation.setNombreJoursDisponibles(dto.getNombreJoursDisponibles());
+
+validation.setAbsenceDeduireConges(dto.getDeductionDroitConges());
+validation.setAbsenceDeduirePaie(dto.getDeductionPaie());
+validation.setDemandeReglementaire(dto.getDemandeReglementaire());
+
+validation.setObservation(dto.getObservation());
         validationRepository.save(validation);
 
         if (dto.getStatut() == StatutValidation.APPROUVE) {

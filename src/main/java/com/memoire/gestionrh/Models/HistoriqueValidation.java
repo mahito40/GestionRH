@@ -1,5 +1,6 @@
 package com.memoire.gestionrh.Models;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -31,7 +32,38 @@ public class HistoriqueValidation {
 
     @ManyToOne
     @JoinColumn(name = "validateur_id")
-    private Utilisateur validateur; // MANAGER, RH ou DG
+    private Utilisateur validateur;
+
+    // ── Informations RH ──────────────────────────────────────
+
+    @Column(name = "nom_remplacant")
+    private String nomRemplacant;
+
+    @Column(name = "absence_deduire_conges")
+    private boolean absenceDeduireConges = false;
+
+    @Column(name = "absence_deduire_paie")
+    private boolean absenceDeduirePaie = false;
+
+    @Column(name = "demande_reglementaire")
+    private boolean demandeReglementaire = false;
+
+    @Column(name = "debut_collaboration")
+    private LocalDate debutCollaboration;
+
+    @Column(name = "nombre_jours_consommes")
+    private Integer nombreJoursConsommes;
+
+    @Column(name = "date_derniers_conges")
+    private LocalDate dateDerniersConges;
+
+    @Column(name = "nombre_jours_disponibles")
+    private Integer nombreJoursDisponibles;
+
+    @Column(name = "observation", columnDefinition = "TEXT")
+    private String observation;
+
+    // ── Timestamps ───────────────────────────────────────────
 
     @CreationTimestamp
     @Column(updatable = false)
@@ -40,55 +72,52 @@ public class HistoriqueValidation {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public UUID getId() {
-        return id;
-    }
+    // ── Getters & Setters ────────────────────────────────────
 
-    public LocalDateTime getDateValidation() {
-        return dateValidation;
-    }
+    public UUID getId() { return id; }
 
-    public void setDateValidation(LocalDateTime dateValidation) {
-        this.dateValidation = dateValidation;
-    }
+    public StatutValidation getStatut() { return statut; }
+    public void setStatut(StatutValidation statut) { this.statut = statut; }
 
-    public StatutValidation getStatut() {
-        return statut;
-    }
+    public LocalDateTime getDateValidation() { return dateValidation; }
+    public void setDateValidation(LocalDateTime dateValidation) { this.dateValidation = dateValidation; }
 
-    public void setStatut(StatutValidation statut) {
-        this.statut = statut;
-    }
+    public Demande getDemande() { return demande; }
+    public void setDemande(Demande demande) { this.demande = demande; }
 
-    public Demande getDemande() {
-        return demande;
-    }
+    public Utilisateur getValidateur() { return validateur; }
+    public void setValidateur(Utilisateur validateur) { this.validateur = validateur; }
 
-    public void setDemande(Demande demande) {
-        this.demande = demande;
-    }
+    public String getNomRemplacant() { return nomRemplacant; }
+    public void setNomRemplacant(String nomRemplacant) { this.nomRemplacant = nomRemplacant; }
 
-    public Utilisateur getValidateur() {
-        return validateur;
-    }
+    public boolean isAbsenceDeduireConges() { return absenceDeduireConges; }
+    public void setAbsenceDeduireConges(boolean absenceDeduireConges) { this.absenceDeduireConges = absenceDeduireConges; }
 
-    public void setValidateur(Utilisateur validateur) {
-        this.validateur = validateur;
-    }
+    public boolean isAbsenceDeduirePaie() { return absenceDeduirePaie; }
+    public void setAbsenceDeduirePaie(boolean absenceDeduirePaie) { this.absenceDeduirePaie = absenceDeduirePaie; }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
+    public boolean isDemandeReglementaire() { return demandeReglementaire; }
+    public void setDemandeReglementaire(boolean demandeReglementaire) { this.demandeReglementaire = demandeReglementaire; }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    public LocalDate getDebutCollaboration() { return debutCollaboration; }
+    public void setDebutCollaboration(LocalDate debutCollaboration) { this.debutCollaboration = debutCollaboration; }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    public Integer getNombreJoursConsommes() { return nombreJoursConsommes; }
+    public void setNombreJoursConsommes(Integer nombreJoursConsommes) { this.nombreJoursConsommes = nombreJoursConsommes; }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public LocalDate getDateDerniersConges() { return dateDerniersConges; }
+    public void setDateDerniersConges(LocalDate dateDerniersConges) { this.dateDerniersConges = dateDerniersConges; }
+
+    public Integer getNombreJoursDisponibles() { return nombreJoursDisponibles; }
+    public void setNombreJoursDisponibles(Integer nombreJoursDisponibles) { this.nombreJoursDisponibles = nombreJoursDisponibles; }
+
+    public String getObservation() { return observation; }
+    public void setObservation(String observation) { this.observation = observation; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }
