@@ -1,6 +1,7 @@
 package com.memoire.gestionrh.Service;
 
 import com.memoire.gestionrh.DTO.MessageDTO;
+import com.memoire.gestionrh.DTO.MessageRequest;
 import com.memoire.gestionrh.Models.Conversation;
 import com.memoire.gestionrh.Models.Message;
 import com.memoire.gestionrh.Models.Utilisateur;
@@ -29,15 +30,15 @@ public class MessageService {
     private final SimpMessagingTemplate messagingTemplate;
 
     // ── Envoyer un message ──
-    public MessageDTO envoyerMessage(MessageDTO dto) {
-        Conversation conversation = conversationRepository.findById(dto.getConversationId())
+    public MessageDTO envoyerMessage(MessageRequest request) {
+        Conversation conversation = conversationRepository.findById(request.getConversationId())
                 .orElseThrow(() -> new EntityNotFoundException("Conversation introuvable"));
 
-        Utilisateur expediteur = utilisateursRepository.findById(dto.getExpediteurId())
+        Utilisateur expediteur = utilisateursRepository.findById(request.getExpediteurId())
                 .orElseThrow(() -> new EntityNotFoundException("Expéditeur introuvable"));
 
         Message message = new Message();
-        message.setContenu(dto.getContenu());
+        message.setContenu(request.getContenu());
         message.setSender(expediteur);
         message.setConversation(conversation);
 
@@ -48,7 +49,7 @@ public class MessageService {
         MessageDTO response = toDTO(saved);
 
         messagingTemplate.convertAndSend(
-                "/topic/conversation/" + dto.getConversationId(),
+                "/topic/conversation/" + request.getConversationId(),
                 response
         );
 

@@ -39,6 +39,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // ── Auth ──
                 .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/logout").permitAll()
                 .requestMatchers("/api/auth/change-password").authenticated()
                 // ── Conversations : tout utilisateur authentifié peut créer ──
                 .requestMatchers(HttpMethod.GET, "/api/conversations/**").authenticated()

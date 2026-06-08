@@ -6,14 +6,12 @@ import java.util.UUID;
 
 @Data
 public class MessageDTO {
-    // Pour l'envoi (input)
-    private String contenu;
-    private UUID expediteurId;
-    private UUID conversationId;
-
     // Pour la réception (output WebSocket)
-    private UUID id;
+   private UUID id;
+    private String contenu;
     private LocalDateTime dateEnvoi;
+    private UUID expediteurId;
     private String expediteurNom;
+    private UUID conversationId;
     private boolean lu;
 }

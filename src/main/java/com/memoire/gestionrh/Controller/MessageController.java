@@ -1,6 +1,7 @@
 package com.memoire.gestionrh.Controller;
 
 import com.memoire.gestionrh.DTO.MessageDTO;
+import com.memoire.gestionrh.DTO.MessageRequest;
 import com.memoire.gestionrh.Service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ public class MessageController {
 
     // ── WebSocket : client envoie vers /app/message.envoyer ──
     @MessageMapping("/message.envoyer")
-    public void envoyerViaSocket(@Payload MessageDTO dto) {
-        messageService.envoyerMessage(dto);
+    public void envoyerViaSocket(@Payload MessageRequest request) {
+        messageService.envoyerMessage(request);
     }
 
     // ── Envoyer un message (REST) ──
     @PostMapping
-    public ResponseEntity<MessageDTO> envoyerMessage(@RequestBody MessageDTO dto) {
-        return ResponseEntity.ok(messageService.envoyerMessage(dto));
+    public ResponseEntity<MessageDTO> envoyerMessage(@RequestBody MessageRequest request) {
+        return ResponseEntity.ok(messageService.envoyerMessage(request));
     }
 
     // ── Historique des messages d'une conversation ──
