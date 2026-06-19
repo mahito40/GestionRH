@@ -1,21 +1,24 @@
 package com.memoire.gestionrh.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.memoire.gestionrh.DTO.DepartementDTO;
 import com.memoire.gestionrh.DTO.DepartementResponseDTO;
 import com.memoire.gestionrh.Models.Departement;
 import com.memoire.gestionrh.Service.DepartementService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/departements")
+@RequiredArgsConstructor
 public class DepartementController {
 
-    @Autowired
+   
     private DepartementService departementService;
 
     @PostMapping

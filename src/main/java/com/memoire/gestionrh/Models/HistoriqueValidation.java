@@ -40,13 +40,13 @@ public class HistoriqueValidation {
     private String nomRemplacant;
 
     @Column(name = "absence_deduire_conges")
-    private boolean absenceDeduireConges = false;
+    private Boolean absenceDeduireConges = false;
 
     @Column(name = "absence_deduire_paie")
-    private boolean absenceDeduirePaie = false;
+    private Boolean absenceDeduirePaie = false;
 
     @Column(name = "demande_reglementaire")
-    private boolean demandeReglementaire = false;
+    private Boolean demandeReglementaire = false;
 
     @Column(name = "debut_collaboration")
     private LocalDate debutCollaboration;
@@ -91,14 +91,14 @@ public class HistoriqueValidation {
     public String getNomRemplacant() { return nomRemplacant; }
     public void setNomRemplacant(String nomRemplacant) { this.nomRemplacant = nomRemplacant; }
 
-    public boolean isAbsenceDeduireConges() { return absenceDeduireConges; }
-    public void setAbsenceDeduireConges(boolean absenceDeduireConges) { this.absenceDeduireConges = absenceDeduireConges; }
+    public Boolean isAbsenceDeduireConges() { return absenceDeduireConges; }
+    public void setAbsenceDeduireConges(Boolean absenceDeduireConges) { this.absenceDeduireConges = absenceDeduireConges; }
 
-    public boolean isAbsenceDeduirePaie() { return absenceDeduirePaie; }
-    public void setAbsenceDeduirePaie(boolean absenceDeduirePaie) { this.absenceDeduirePaie = absenceDeduirePaie; }
+    public Boolean isAbsenceDeduirePaie() { return absenceDeduirePaie; }
+    public void setAbsenceDeduirePaie(Boolean absenceDeduirePaie) { this.absenceDeduirePaie = absenceDeduirePaie; }
 
-    public boolean isDemandeReglementaire() { return demandeReglementaire; }
-    public void setDemandeReglementaire(boolean demandeReglementaire) { this.demandeReglementaire = demandeReglementaire; }
+    public Boolean isDemandeReglementaire() { return demandeReglementaire; }
+    public void setDemandeReglementaire(Boolean demandeReglementaire) { this.demandeReglementaire = demandeReglementaire; }
 
     public LocalDate getDebutCollaboration() { return debutCollaboration; }
     public void setDebutCollaboration(LocalDate debutCollaboration) { this.debutCollaboration = debutCollaboration; }
