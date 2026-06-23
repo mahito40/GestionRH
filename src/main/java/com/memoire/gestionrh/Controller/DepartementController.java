@@ -19,7 +19,7 @@ import java.util.UUID;
 public class DepartementController {
 
    
-    private DepartementService departementService;
+    private final DepartementService departementService;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('RH','ADMIN')")
